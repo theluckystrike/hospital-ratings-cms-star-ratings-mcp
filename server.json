@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/hospital-ratings-cms-star-ratings-mcp",
+  "title": "Hospital Ratings and CMS Star Ratings MCP",
+  "description": "CMS hospital star ratings, patient survey stars and ER wait times for US hospitals (Care Compare).",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/hospital-ratings-cms-star-ratings-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://hospital-ratings-cms-star-ratings-mcp.lipmichal.workers.dev/mcp"
+    }
+  ]
+}

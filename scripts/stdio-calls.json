@@ -1,0 +1,5 @@
+[
+  ["hospital_search", {"city": "Boston", "state": "MA"}],
+  ["hospital_ratings", {"name": "Mass General", "state": "MA"}],
+  ["hospital_compare", {"hospitals": [{"facility_id": "220071"}, {"facility_id": "220110"}]}]
+]

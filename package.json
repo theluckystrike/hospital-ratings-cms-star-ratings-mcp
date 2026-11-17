@@ -1,0 +1,56 @@
+{
+  "name": "hospital-ratings-cms-star-ratings-mcp",
+  "version": "1.0.0",
+  "description": "Hospital ratings MCP server: CMS overall hospital star ratings, patient survey (HCAHPS) stars, ER wait times and quality measures for every US hospital from Medicare Care Compare. Hosted, no key.",
+  "type": "module",
+  "license": "MIT",
+  "author": "theluckystrike",
+  "mcpName": "io.github.theluckystrike/hospital-ratings-cms-star-ratings-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/hospital-ratings-cms-star-ratings-mcp"
+  },
+  "homepage": "https://www.mcpstamp.com/servers/",
+  "bin": {
+    "hospital-ratings-cms-star-ratings-mcp": "dist/stdio.js"
+  },
+  "main": "dist/stdio.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test",
+    "start": "node dist/stdio.js",
+    "deploy": "npx wrangler@4 deploy",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "hospital-ratings",
+    "hospital-star-ratings",
+    "cms-star-ratings",
+    "hospital-compare",
+    "care-compare",
+    "medicare",
+    "hcahps",
+    "er-wait-times",
+    "healthcare",
+    "cloudflare-workers"
+  ]
+}
