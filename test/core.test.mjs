@@ -42,9 +42,18 @@ const f = async (url) => {
 
 test('query URL: DKAN conditions with = encoded, like and in arrays, schema off', () => {
   const u = queryUrl('xubh-q36u', [['state', '=', 'MA'], ['facility_name', 'like', '%GENE%'], ['facility_id', 'in', ['220071', '220110']]], 50);
-  assert.equal(u, 'https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0?limit=50&schema=false&conditions[0][property]=state&conditions[0][operator]=%3D&conditions[0][value]=MA'
+  assert.equal(u, 'https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0?limit=50&schema=false&results=true&conditions[0][property]=state&conditions[0][operator]=%3D&conditions[0][value]=MA'
     + '&conditions[1][property]=facility_name&conditions[1][operator]=like&conditions[1][value]=%25GENE%25'
     + '&conditions[2][property]=facility_id&conditions[2][operator]=in&conditions[2][value][0]=220071&conditions[2][value][1]=220110');
+});
+
+test('a single HTTP 403 from data.cms.gov is retried once; a second one is an upstream error', async () => {
+  let n = 0;
+  const flaky = async (u) => { if (u.includes('/datastore/') && n++ === 0) throw new Error('HTTP 403'); return f(u); };
+  const r = await hospitalRatings(flaky, { facility_id: '220110' });
+  assert.equal(r.hospital.facility_id, '220110');
+  const dead = async (u) => { if (u.includes('/datastore/')) throw new Error('HTTP 403'); return f(u); };
+  await assert.rejects(hospitalRatings(dead, { facility_id: '220110' }), /did not answer \(HTTP 403\)/);
 });
 
 test('name matching: abbreviations, apostrophes and stop words', () => {

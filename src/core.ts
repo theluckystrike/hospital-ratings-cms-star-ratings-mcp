@@ -91,7 +91,7 @@ export const TYPES: Record<string, string> = {
 export type Cond = [property: string, operator: '=' | 'like' | 'in', value: string | string[]];
 
 export function queryUrl(dataset: string, conds: Cond[], limit = 1500): string {
-  const parts = [`limit=${limit}`, 'schema=false'];
+  const parts = [`limit=${limit}`, 'schema=false', 'results=true'];
   conds.forEach(([p, op, v], i) => {
     parts.push(`conditions[${i}][property]=${p}`, `conditions[${i}][operator]=${op === '=' ? '%3D' : op}`);
     if (Array.isArray(v)) v.forEach((x, j) => parts.push(`conditions[${i}][value][${j}]=${encodeURIComponent(x)}`));
@@ -104,10 +104,18 @@ type Row = Record<string, string>;
 
 export async function query(f: FetchText, dataset: string, conds: Cond[], limit = 1500): Promise<Row[]> {
   let body: string;
+  const url = queryUrl(dataset, conds, limit);
   try {
-    body = await f(queryUrl(dataset, conds, limit), { cacheTtl: 21600, timeoutMs: 20000 });
+    body = await f(url, { cacheTtl: 21600, timeoutMs: 20000 });
   } catch (e) {
-    throw new UpstreamError(`data.cms.gov did not answer (${(e as Error).message}). Try again in a minute.`);
+    // data.cms.gov sits behind Akamai, which now and then answers a burst of reads with HTTP 403. One retry after a pause.
+    if (!/HTTP 403/.test((e as Error).message)) throw new UpstreamError(`data.cms.gov did not answer (${(e as Error).message}). Try again in a minute.`);
+    await new Promise((r) => setTimeout(r, 1200));
+    try {
+      body = await f(url, { cacheTtl: 21600, timeoutMs: 20000 });
+    } catch (e2) {
+      throw new UpstreamError(`data.cms.gov did not answer (${(e2 as Error).message}). Try again in a minute.`);
+    }
   }
   let d: { results?: Row[] };
   try { d = JSON.parse(body); } catch { throw new UpstreamError('data.cms.gov returned something that is not JSON.'); }
